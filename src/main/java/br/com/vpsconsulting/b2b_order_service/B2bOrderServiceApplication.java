@@ -9,5 +9,5 @@ public class B2bOrderServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(B2bOrderServiceApplication.class, args);
 	}
-	
+
 }
