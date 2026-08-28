@@ -29,5 +29,23 @@ curl -X POST http://localhost:8080/api/v1/orders   -H "Content-Type: application
     ]
   }'
 
-curl -X GET http://localhost:8080/api/v1/orders/6a913a1ae66f803fab58605a
+curl -X GET http://localhost:8080/api/v1/orders/6a91fde3b601cedf199e22eb
+
+curl -X GET http://localhost:8080/api/v1/orders
+
+curl -X GET "http://localhost:8080/api/v1/orders?orderId=6a91fde3b601cedf199e22eb"
+
+curl -X GET "http://localhost:8080/api/v1/orders?partnerId=6a91fdb4197c2faa77c2158e"
+
+curl -X GET "http://localhost:8080/api/v1/orders?status=APPROVED"
+
+curl -X GET "http://localhost:8080/api/v1/orders?startDate=2026-08-01T00:00:00Z&endDate=2026-08-31T23:59:59Z"
+
+curl -X GET "http://localhost:8080/api/v1/orders?startDate=2026-08-28T00:00:00Z"
+
+curl -X GET "http://localhost:8080/api/v1/orders?partnerId=6a91fdb4197c2faa77c2158e&status=APPROVED&startDate=2026-08-01T00:00:00Z&endDate=2026-08-31T23:59:59Z"
+
+curl -X GET "http://localhost:8080/api/v1/orders?status=CANCELLED"
+
+curl -X GET "http://localhost:8080/api/v1/orders?orderId=6a91fde3b601cedf199e22eb&partnerId=6a91fdb4197c2faa77c2158e&status=APPROVED&startDate=2026-08-01T00:00:00Z&endDate=2026-08-31T23:59:59Z"
 ```
