@@ -60,4 +60,11 @@ public class OrderService {
 
         return mapper.toResponseDTO(savedOrder);
     }
+
+    @Transactional(readOnly = true)
+    public OrderResponseDTO findById(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + id));
+        return mapper.toResponseDTO(order);
+    }
 }

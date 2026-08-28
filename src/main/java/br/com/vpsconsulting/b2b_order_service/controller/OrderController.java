@@ -21,4 +21,10 @@ public class OrderController {
         OrderResponseDTO createdOrder = orderService.createOrder(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> findById(@PathVariable String id) {
+        OrderResponseDTO response = orderService.findById(id);
+        return ResponseEntity.ok(response);
+    }
 }
