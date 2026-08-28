@@ -1,5 +1,5 @@
 services:
-  # Serviço 1: Banco de Dados MongoDB
+  # Serviço 1: Banco de Dados MongoDB com Replica Set
   mongodb:
     image: mongo:8.0
     container_name: b2b_mongodb_dev
@@ -10,6 +10,27 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=orders_db
+    # Inicia o servidor em modo Replica Set com autenticação e suporte a chaves de transação
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile", "/data/configdb/keyfile"]
+    entrypoint:
+      - bash
+      - -c
+      - |
+        # Cria um arquivo de chave para a autenticação interna entre nós do Replica Set
+        if [ ! -f /data/configdb/keyfile ]; then
+          openssl rand -base64 756 > /data/configdb/keyfile
+          chmod 400 /data/configdb/keyfile
+          chown 999:999 /data/configdb/keyfile
+        fi
+        exec docker-entrypoint.sh "$$@"
+    healthcheck:
+      test: >
+        mongosh -u admin -p secret --authenticationDatabase admin --eval "try { rs.status().ok } catch(e) { 0 }" | grep -q "1"
+        || mongosh -u admin -p secret --authenticationDatabase admin --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]})"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
     volumes:
       - mongo_data_dev:/data/db
     networks:
@@ -25,10 +46,11 @@ services:
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=secret
-      - ME_CONFIG_MONGODB_URL=mongodb://admin:secret@mongodb:27017/
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:secret@mongodb:27017/?replicaSet=rs0&authSource=admin
       - ME_CONFIG_BASICAUTH=false
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - b2b_dev_network
 
