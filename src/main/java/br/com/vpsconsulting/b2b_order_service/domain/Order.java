@@ -34,4 +34,13 @@ public class Order {
 
     @Builder.Default
     private Instant updatedAt = Instant.now();
+
+    public BigDecimal calculateTotalAmount() {
+        if (items == null || items.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return items.stream()
+                .map(OrderItem::getSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
