@@ -1,0 +1,40 @@
+services:
+  # Serviço 1: Banco de Dados MongoDB
+  mongodb:
+    image: mongo:8.0
+    container_name: b2b_mongodb_dev
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=orders_db
+    volumes:
+      - mongo_data_dev:/data/db
+    networks:
+      - b2b_dev_network
+
+  # Serviço 2: Interface Gráfica Web (Mongo Express)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: b2b_mongo_express_dev
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=secret
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:secret@mongodb:27017/
+      - ME_CONFIG_BASICAUTH=false
+    depends_on:
+      - mongodb
+    networks:
+      - b2b_dev_network
+
+volumes:
+  mongo_data_dev:
+
+networks:
+  b2b_dev_network:
+    driver: bridge
