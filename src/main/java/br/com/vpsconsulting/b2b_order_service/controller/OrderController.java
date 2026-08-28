@@ -36,4 +36,10 @@ public class OrderController {
         List<OrderResponseDTO> response = orderService.findAllByFilter(filter);
         return ResponseEntity.ok(response);
     }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable String id) {
+        OrderResponseDTO response = orderService.cancelOrder(id);
+        return ResponseEntity.ok(response);
+    }
 }

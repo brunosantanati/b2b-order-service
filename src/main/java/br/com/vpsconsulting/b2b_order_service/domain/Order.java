@@ -43,4 +43,16 @@ public class Order {
                 .map(OrderItem::getSubTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public void cancel() {
+        if (isCanceled()) {
+            throw new IllegalStateException("O pedido já se encontra cancelado.");
+        }
+        this.status = OrderStatus.CANCELLED;
+        this.updatedAt = Instant.now();
+    }
+
+    public boolean isCanceled() {
+        return OrderStatus.CANCELLED.equals(this.status);
+    }
 }

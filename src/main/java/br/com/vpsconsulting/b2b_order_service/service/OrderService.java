@@ -110,4 +110,22 @@ public class OrderService {
                 .map(mapper::toResponseDTO)
                 .toList();
     }
+
+    @Transactional
+    public OrderResponseDTO cancelOrder(String id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + id));
+
+        order.cancel();
+
+        long updatedCount = partnerRepository.refundCreditLimit(order.getPartnerId(), order.getTotalAmount());
+
+        if (updatedCount == 0) {
+            throw new ResourceNotFoundException("Parceiro não encontrado para estorno de limite. ID: " + order.getPartnerId());
+        }
+
+        Order savedOrder = orderRepository.save(order);
+
+        return mapper.toResponseDTO(savedOrder);
+    }
 }

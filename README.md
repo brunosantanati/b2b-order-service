@@ -48,4 +48,6 @@ curl -X GET "http://localhost:8080/api/v1/orders?partnerId=6a91fdb4197c2faa77c21
 curl -X GET "http://localhost:8080/api/v1/orders?status=CANCELLED"
 
 curl -X GET "http://localhost:8080/api/v1/orders?orderId=6a91fde3b601cedf199e22eb&partnerId=6a91fdb4197c2faa77c2158e&status=APPROVED&startDate=2026-08-01T00:00:00Z&endDate=2026-08-31T23:59:59Z"
+
+curl -X PATCH http://localhost:8080/api/v1/orders/6a91fde3b601cedf199e22eb/cancel
 ```
