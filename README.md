@@ -14,7 +14,7 @@ db.getSiblingDB("orders_db").partners.insertOne({
 '
 
 curl -X POST http://localhost:8080/api/v1/orders   -H "Content-Type: application/json"   -d '{
-    "partnerId": "6a91383fdd80259c051fba78",
+    "partnerId": "6a9293996734fd92e8a0374d",
     "items": [
       {
         "productId": "PROD-001",
@@ -50,4 +50,10 @@ curl -X GET "http://localhost:8080/api/v1/orders?status=CANCELLED"
 curl -X GET "http://localhost:8080/api/v1/orders?orderId=6a91fde3b601cedf199e22eb&partnerId=6a91fdb4197c2faa77c2158e&status=APPROVED&startDate=2026-08-01T00:00:00Z&endDate=2026-08-31T23:59:59Z"
 
 curl -X PATCH http://localhost:8080/api/v1/orders/6a91fde3b601cedf199e22eb/cancel
+
+Kafka UI
+http://localhost:8085/
+
+Mongo Express
+http://localhost:8081/
 ```
