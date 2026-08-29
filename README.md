@@ -62,4 +62,9 @@ http://localhost:8085/
 
 Mongo Express
 http://localhost:8081/
+
+Swagger
+http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
+http://localhost:8080/v3/api-docs
 ```
