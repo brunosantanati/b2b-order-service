@@ -2,6 +2,7 @@ package br.com.vpsconsulting.b2b_order_service.controller;
 
 import br.com.vpsconsulting.b2b_order_service.dto.request.OrderFilterRequestDTO;
 import br.com.vpsconsulting.b2b_order_service.dto.request.OrderRequestDTO;
+import br.com.vpsconsulting.b2b_order_service.dto.request.UpdateOrderStatusRequestDTO;
 import br.com.vpsconsulting.b2b_order_service.dto.response.OrderResponseDTO;
 import br.com.vpsconsulting.b2b_order_service.service.OrderService;
 import jakarta.validation.Valid;
@@ -40,6 +41,14 @@ public class OrderController {
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable String id) {
         OrderResponseDTO response = orderService.cancelOrder(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<OrderResponseDTO> updateOrderStatus(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateOrderStatusRequestDTO request) {
+        OrderResponseDTO response = orderService.updateOrderStatus(id, request);
         return ResponseEntity.ok(response);
     }
 }

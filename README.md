@@ -14,7 +14,7 @@ db.getSiblingDB("orders_db").partners.insertOne({
 '
 
 curl -X POST http://localhost:8080/api/v1/orders   -H "Content-Type: application/json"   -d '{
-    "partnerId": "6a9293996734fd92e8a0374d",
+    "partnerId": "6a929a3b56fca84960c868bb",
     "items": [
       {
         "productId": "PROD-001",
@@ -51,6 +51,12 @@ curl -X GET "http://localhost:8080/api/v1/orders?orderId=6a91fde3b601cedf199e22e
 
 curl -X PATCH http://localhost:8080/api/v1/orders/6a91fde3b601cedf199e22eb/cancel
 
+curl -X PATCH http://localhost:8080/api/v1/orders/6a929a94aed32c5d26286a6e/status \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "DELIVERED"
+  }'
+  
 Kafka UI
 http://localhost:8085/
 
