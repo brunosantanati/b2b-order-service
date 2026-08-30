@@ -13,6 +13,20 @@ db.getSiblingDB("orders_db").partners.insertOne({
 });
 '
 
+curl -X POST http://localhost:8080/api/v1/partners \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Empresa Comercial B2B LTDA",
+    "cnpj": "12345678000199",
+    "creditLimit": 50000.00
+  }'
+  
+curl -X GET http://localhost:8080/api/v1/partners \
+  -H "Accept: application/json"
+  
+curl -X GET http://localhost:8080/api/v1/partners/6a93ddc9c79f062dfe3b2a7a \
+  -H "Accept: application/json"
+
 curl -X POST http://localhost:8080/api/v1/orders   -H "Content-Type: application/json"   -d '{
     "partnerId": "6a929a3b56fca84960c868bb",
     "items": [
