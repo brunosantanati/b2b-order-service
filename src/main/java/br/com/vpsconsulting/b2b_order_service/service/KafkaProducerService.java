@@ -2,6 +2,7 @@ package br.com.vpsconsulting.b2b_order_service.service;
 
 import br.com.vpsconsulting.b2b_order_service.config.KafkaConfig;
 import br.com.vpsconsulting.b2b_order_service.dto.event.OrderStatusUpdatedEvent;
+import br.com.vpsconsulting.b2b_order_service.exception.EventSerializationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class KafkaProducerService {
                     });
         } catch (JsonProcessingException e) {
             log.error("Erro ao serializar evento de atualização de status do pedido ID {}", event.getOrderId(), e);
-            throw new RuntimeException("Erro ao serializar evento do Kafka", e);
+            throw new EventSerializationException("Erro ao serializar evento do Kafka", e);
         }
     }
 }

@@ -3,6 +3,7 @@ package br.com.vpsconsulting.b2b_order_service.service;
 import br.com.vpsconsulting.b2b_order_service.domain.Partner;
 import br.com.vpsconsulting.b2b_order_service.dto.request.PartnerRequestDTO;
 import br.com.vpsconsulting.b2b_order_service.dto.response.PartnerResponseDTO;
+import br.com.vpsconsulting.b2b_order_service.exception.CnpjAlreadyExistsException;
 import br.com.vpsconsulting.b2b_order_service.exception.ResourceNotFoundException;
 import br.com.vpsconsulting.b2b_order_service.mapper.PartnerMapper;
 import br.com.vpsconsulting.b2b_order_service.repository.PartnerRepository;
@@ -24,7 +25,7 @@ public class PartnerService {
     @Transactional
     public PartnerResponseDTO createPartner(PartnerRequestDTO request) {
         if (partnerRepository.existsByCnpj(request.getCnpj())) {
-            throw new IllegalArgumentException("Já existe um parceiro cadastrado com o CNPJ: " + request.getCnpj());
+            throw new CnpjAlreadyExistsException("Já existe um parceiro cadastrado com o CNPJ: " + request.getCnpj());
         }
 
         Partner partner = partnerMapper.toEntity(request);

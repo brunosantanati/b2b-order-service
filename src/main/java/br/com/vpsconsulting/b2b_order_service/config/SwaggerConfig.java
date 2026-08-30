@@ -19,7 +19,7 @@ public class SwaggerConfig {
                         .description("Microserviço B2B para gestão e processamento de pedidos com integração ao Apache Kafka e MongoDB.")
                         .contact(new Contact()
                                 .name("VPS Consulting Tech Team")
-                                .email("tech@vpsconsulting.com.br"))
+                                .email("bruno.santana.ti@gmail.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://springdoc.org")));

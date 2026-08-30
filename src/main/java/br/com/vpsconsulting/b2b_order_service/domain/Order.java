@@ -1,6 +1,7 @@
 package br.com.vpsconsulting.b2b_order_service.domain;
 
 import br.com.vpsconsulting.b2b_order_service.enums.OrderStatus;
+import br.com.vpsconsulting.b2b_order_service.exception.OrderAlreadyCancelledException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +47,7 @@ public class Order {
 
     public void cancel() {
         if (isCanceled()) {
-            throw new IllegalStateException("O pedido já se encontra cancelado.");
+            throw new OrderAlreadyCancelledException("O pedido já se encontra cancelado.");
         }
         this.status = OrderStatus.CANCELLED;
         this.updatedAt = Instant.now();

@@ -19,5 +19,4 @@ public interface OrderRepository extends MongoRepository<Order, String> {
 
     List<Order> findByStatusAndCreatedAtBetween(OrderStatus status, Instant startDate, Instant endDate);
 
-    // TODO: add dynamic query with filters
 }
