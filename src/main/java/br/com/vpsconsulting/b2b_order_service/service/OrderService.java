@@ -1,6 +1,5 @@
 package br.com.vpsconsulting.b2b_order_service.service;
 
-import br.com.vpsconsulting.b2b_order_service.config.KafkaConfig;
 import br.com.vpsconsulting.b2b_order_service.domain.Order;
 import br.com.vpsconsulting.b2b_order_service.domain.OrderItem;
 import br.com.vpsconsulting.b2b_order_service.domain.Partner;
@@ -15,11 +14,8 @@ import br.com.vpsconsulting.b2b_order_service.exception.ResourceNotFoundExceptio
 import br.com.vpsconsulting.b2b_order_service.mapper.OrderMapper;
 import br.com.vpsconsulting.b2b_order_service.repository.OrderRepository;
 import br.com.vpsconsulting.b2b_order_service.repository.PartnerRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -39,7 +35,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final PartnerRepository partnerRepository;
     private final MongoTemplate mongoTemplate;
-    private final OrderMapper mapper;
+    private final OrderMapper orderMapper;
     private final KafkaProducerService kafkaProducerService;
 
     @Transactional
@@ -49,7 +45,7 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Parceiro não encontrado com ID: " + dto.getPartnerId()));
 
         List<OrderItem> domainItems = dto.getItems().stream()
-                .map(mapper::toOrderItemEntity)
+                .map(orderMapper::toOrderItemEntity)
                 .toList();
 
         Instant now = Instant.now();
@@ -74,14 +70,14 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return mapper.toResponseDTO(savedOrder);
+        return orderMapper.toResponseDTO(savedOrder);
     }
 
     @Transactional(readOnly = true)
     public OrderResponseDTO findById(String id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + id));
-        return mapper.toResponseDTO(order);
+        return orderMapper.toResponseDTO(order);
     }
 
     @Transactional(readOnly = true)
@@ -116,7 +112,7 @@ public class OrderService {
         List<Order> orders = mongoTemplate.find(query, Order.class);
 
         return orders.stream()
-                .map(mapper::toResponseDTO)
+                .map(orderMapper::toResponseDTO)
                 .toList();
     }
 
@@ -135,7 +131,7 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return mapper.toResponseDTO(savedOrder);
+        return orderMapper.toResponseDTO(savedOrder);
     }
 
     @Transactional
@@ -148,7 +144,7 @@ public class OrderService {
 
         if (previousStatus == newStatus) {
             log.info("O pedido {} já se encontra no status {}", id, newStatus);
-            return mapper.toResponseDTO(order);
+            return orderMapper.toResponseDTO(order);
         }
 
         order.setStatus(newStatus);
@@ -165,6 +161,6 @@ public class OrderService {
 
         kafkaProducerService.sendOrderStatusUpdatedEvent(event);
 
-        return mapper.toResponseDTO(updatedOrder);
+        return orderMapper.toResponseDTO(updatedOrder);
     }
 }
