@@ -17,7 +17,7 @@ public class KafkaProducerService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public void sendOrderStatusUpdatedEvent(OrderStatusUpdatedEvent event) {
+    public void publishOrderStatusUpdatedEvent(OrderStatusUpdatedEvent event) {
         try {
             String jsonPayload = objectMapper.writeValueAsString(event);
             log.info("Publicando evento OrderStatusUpdatedEvent no Kafka para o pedido ID {}: {}", event.getOrderId(), jsonPayload);

@@ -51,7 +51,7 @@ public class OrderService {
         Instant now = Instant.now();
         Order order = Order.builder()
                 .partnerId(partner.getId())
-                .status(OrderStatus.APPROVED)
+                .status(OrderStatus.PENDING)
                 .items(domainItems)
                 .createdAt(now)
                 .updatedAt(now)
@@ -69,6 +69,8 @@ public class OrderService {
         }
 
         Order savedOrder = orderRepository.save(order);
+
+        publishOrderStatusUpdatedEvent(savedOrder, null, OrderStatus.PENDING);
 
         return orderMapper.toResponseDTO(savedOrder);
     }
@@ -121,6 +123,7 @@ public class OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado com ID: " + id));
 
+        OrderStatus previousStatus = order.getStatus();
         order.cancel();
 
         long updatedCount = partnerRepository.refundCreditLimit(order.getPartnerId(), order.getTotalAmount());
@@ -130,6 +133,8 @@ public class OrderService {
         }
 
         Order savedOrder = orderRepository.save(order);
+
+        publishOrderStatusUpdatedEvent(savedOrder, previousStatus, OrderStatus.CANCELLED);
 
         return orderMapper.toResponseDTO(savedOrder);
     }
@@ -151,6 +156,13 @@ public class OrderService {
         order.setUpdatedAt(Instant.now());
         Order updatedOrder = orderRepository.save(order);
 
+        publishOrderStatusUpdatedEvent(updatedOrder, previousStatus, newStatus);
+
+        return orderMapper.toResponseDTO(updatedOrder);
+    }
+
+    private void publishOrderStatusUpdatedEvent(Order updatedOrder, OrderStatus previousStatus, OrderStatus newStatus) {
+
         OrderStatusUpdatedEvent event = OrderStatusUpdatedEvent.builder()
                 .orderId(updatedOrder.getId())
                 .partnerId(updatedOrder.getPartnerId())
@@ -159,8 +171,6 @@ public class OrderService {
                 .updatedAt(updatedOrder.getUpdatedAt())
                 .build();
 
-        kafkaProducerService.sendOrderStatusUpdatedEvent(event);
-
-        return orderMapper.toResponseDTO(updatedOrder);
+        kafkaProducerService.publishOrderStatusUpdatedEvent(event);
     }
 }
