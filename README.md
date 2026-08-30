@@ -1,6 +1,8 @@
 ```
+docker compose up --build -d
 docker compose up -d
 docker-compose down -v
+docker logs -f b2b_order_service_app
 
 docker exec -it b2b_mongodb_dev mongosh -u admin -p secret --authenticationDatabase admin --eval '
 db.getSiblingDB("orders_db").partners.insertOne({

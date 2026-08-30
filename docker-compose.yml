@@ -26,7 +26,7 @@ services:
     healthcheck:
       test: >
         mongosh -u admin -p secret --authenticationDatabase admin --eval "try { rs.status().ok } catch(e) { 0 }" | grep -q "1"
-        || mongosh -u admin -p secret --authenticationDatabase admin --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]})"
+        || mongosh -u admin -p secret --authenticationDatabase admin --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]})"
       interval: 5s
       timeout: 10s
       retries: 10
@@ -47,7 +47,7 @@ services:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=secret
       # Adicionada a flag directConnection=true e ignorado o nome do replicaSet
-      - ME_CONFIG_MONGODB_URL=mongodb://admin:secret@mongodb:27017/orders_db?authSource=admin&directConnection=true
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:secret@mongodb:27017/orders_db?authSource=admin&replicaSet=rs0
       - ME_CONFIG_BASICAUTH=false
     depends_on:
       mongodb:
@@ -95,6 +95,25 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     depends_on:
       - kafka
+    networks:
+      - b2b_dev_network
+
+  # Serviço 5: Aplicação B2B Order Service (Spring Boot)
+  app:
+    build: .
+    container_name: b2b_order_service_app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:secret@mongodb:27017/orders_db?authSource=admin&replicaSet=rs0
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_THREADS_VIRTUAL_ENABLED=true
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_started
     networks:
       - b2b_dev_network
 
