@@ -4,6 +4,11 @@ docker compose up -d
 docker-compose down -v
 docker logs -f b2b_order_service_app
 
+Para rodar app pelo Intellij e a infra pelo docker-compose.yml
+sudo sh -c 'echo "127.0.0.1 mongodb" >> /etc/hosts'
+docker compose up -d mongodb mongo-express kafka kafka-ui
+docker compose up -d --scale app=0
+
 docker exec -it b2b_mongodb_dev mongosh -u admin -p secret --authenticationDatabase admin --eval '
 db.getSiblingDB("orders_db").partners.insertOne({
   name: "Empresa Parceira Teste LTDA",
