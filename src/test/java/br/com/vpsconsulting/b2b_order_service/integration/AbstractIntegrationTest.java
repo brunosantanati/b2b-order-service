@@ -7,16 +7,21 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class AbstractIntegrationTest {
 
     static final MongoDBContainer MONGO_CONTAINER;
+    static final KafkaContainer KAFKA_CONTAINER;
 
     static {
         MONGO_CONTAINER = new MongoDBContainer(DockerImageName.parse("mongo:8.0"));
+        KAFKA_CONTAINER = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.6.1"));
+
         MONGO_CONTAINER.start();
+        KAFKA_CONTAINER.start();
     }
 
     @LocalServerPort
@@ -25,6 +30,7 @@ public abstract class AbstractIntegrationTest {
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.data.mongodb.uri", MONGO_CONTAINER::getReplicaSetUrl);
+        registry.add("spring.kafka.bootstrap-servers", KAFKA_CONTAINER::getBootstrapServers);
     }
 
     @BeforeEach
