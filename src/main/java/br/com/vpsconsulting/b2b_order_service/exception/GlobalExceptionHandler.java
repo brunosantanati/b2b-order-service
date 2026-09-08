@@ -38,8 +38,8 @@ public class GlobalExceptionHandler {
         return getResponseEntity(HttpStatus.CONFLICT, error, ex.getMessage());
     }
 
-    @ExceptionHandler(EventSerializationException.class)
-    public ResponseEntity<Map<String, Object>> handleOrderAlreadyCancelled(EventSerializationException ex) {
+    @ExceptionHandler(SendEventException.class)
+    public ResponseEntity<Map<String, Object>> handleOrderAlreadyCancelled(SendEventException ex) {
         String error = WordUtils.capitalizeFully(HttpStatus.INTERNAL_SERVER_ERROR.name().replace('_', ' '));
         return getResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, error, ex.getMessage());
     }
