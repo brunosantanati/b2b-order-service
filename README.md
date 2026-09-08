@@ -44,6 +44,11 @@ Em vez de utilizar *pessimistic locking* ou *distributed locks* (que introduzem 
 ### 3. Event-Driven Architecture (EDA) com Apache Kafka
 Sempre que um pedido altera seu estado (seja na criação como `PENDING`, no cancelamento como `CANCELLED` ou nas transições de status como `APPROVED`, `DELIVERED`), a aplicação publica um evento no tópico `b2b-order-status-events`. Isso desacopla o serviço de pedidos dos demais microsserviços da empresa (como faturamento, estoque ou notificações).
 
+### 4. Indexação Estratégica e Inicialização Dinâmica no MongoDB
+Para evitar que consultas com filtros dinâmicos façam varreduras completas no banco de dados (*Collection Scans* / `COLLSCAN`), desenhei uma estratégia de indexação baseada nos padrões de leitura mais comuns do sistema B2B:
+- **Índice Único em `Partner`:** Garantia de busca em tempo constante $O(1)$ e validação de integridade única no campo `cnpj` (`@Indexed(unique = true)`).
+- **Índice Composto no Padrão ESR (Equality, Sort, Range) em `Order`:** Mapeamento de `@CompoundIndex(name = "partner_status_created_idx", def = "{'partnerId': 1, 'status': 1, 'createdAt': -1}")`. Essa estrutura otimiza as buscas combinadas de dashboard (`partnerId` + `status` + intervalo de datas) e já entrega os resultados ordenados do pedido mais recente para o mais antigo sem exigir ordenação em memória RAM (*In-Memory Sort*).
+- **Criação Garantida via `MongoConfig`:** Para assegurar que o MongoDB crie todos os índices na inicialização em qualquer ambiente, estruturei a classe de configuração ouvindo o evento `ContextRefreshedEvent` do Spring, processando programaticamente as anotações do mapeamento do banco com a API moderna do `createIndex()`.
 ---
 
 ## 🧪 Estratégia de Testes Automatizados
