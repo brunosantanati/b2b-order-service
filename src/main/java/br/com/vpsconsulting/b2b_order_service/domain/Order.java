@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -19,17 +22,22 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "orders")
+@CompoundIndexes({
+        @CompoundIndex(name = "partner_status_created_idx", def = "{'partnerId': 1, 'status': 1, 'createdAt': -1}")
+})
 public class Order {
 
     @Id
     private String id;
     private String partnerId;
     private BigDecimal totalAmount;
+    @Indexed
     private OrderStatus status;
 
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
+    @Indexed
     @Builder.Default
     private Instant createdAt = Instant.now();
 
