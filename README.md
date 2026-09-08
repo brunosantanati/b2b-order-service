@@ -29,7 +29,7 @@ Optei por habilitar as **Virtual Threads** (`spring.threads.virtual.enabled=true
 ### 2. Controle de Concorrência sem Locks (Operações Atômicas no MongoDB)
 Um dos requisitos cruciais em um sistema B2B é impedir que um parceiro realize compras além do seu limite de crédito em requisições simultâneas (*race conditions*).
 
-Em vez de utilizar *pessimistic locking* ou *distributed locks* (que introduzem latência e potenciais gargalos em cenários de alta concorrência), optei por realizar atualizações atômicas diretamente no MongoDB com **Conditional Updates (`findAndModify` / `updateFirst`)**:
+Em vez de utilizar *pessimistic locking*, *optimistic locking* ou *distributed locking* (que introduzem latência e potenciais gargalos em cenários de alta concorrência), optei por realizar atualizações atômicas diretamente no MongoDB com **Conditional Updates (`findAndModify` / `updateFirst`)**:
 
 - **Debitar Limite:** O débito ocorre em uma única operação de banco que verifica atomicamente se o parceiro possui saldo suficiente antes de decrementar:
   ```javascript
